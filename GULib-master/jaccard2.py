@@ -52,7 +52,7 @@ if args_cli.base_model!="GCN":
 
 
 # === Load Data ===
-data_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/processed/transductive/{dataset}0.8_0_0.2.pkl"
+data_path = f"<DATA_PATH>"
 with open(data_path, "rb") as f:
     data = pickle.load(f)
 data = data.to("cuda")
@@ -64,12 +64,12 @@ num_nodes = data.x.size(0)
 
 # === Paths ===
 if model_name=="Projector":
-    original_model_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/model/node_level/{dataset}/Projector.pt"
-    gold_model_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/model/node_level/{dataset}/Projector.pt"
+    original_model_path = f"BASE_MODEL_PATH"
+    gold_model_path = f"GOLD_MODEL_PATH"
 else:
-    original_model_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/model/node_level/{dataset}/{unlearn_task}/{args_cli.base_model}"
-    gold_model_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/unlearned_models/GOLD/{dataset}/{unlearn_task}/{unlearn_ratio}{copy_str}/GOLD_{dataset}_node_{unlearn_ratio}{base_model_str}.pt"
-megu_model_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/unlearned_models/{model_name}/{dataset}/{unlearn_task}/{unlearn_ratio}{copy_str}/{model_name}_{dataset}_node_{unlearn_ratio}{base_model_str}.pt"
+    original_model_path = f"ORIGINAL_MODEL_PATH"
+    gold_model_path = f"GOLD_PATH"
+megu_model_path = f"UNLEARN_PATH"
 
 # === General Model Args ===
 args = {
@@ -89,7 +89,7 @@ def load_and_predict(model_path, model_type="GOLD", unlearned_param_path=None,ru
 
     if unlearn_task == "node":
         # Remove edges connected to unlearned nodes
-        unlearn_idx_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/unlearning_task/transductive/imbalanced/unlearning_nodes{copy_str}_{u_ratio}_{dataset}_{run_number}_nodes_{int(u_ratio * num_nodes)}.txt"
+        unlearn_idx_path = f"UNLEARN_IDX"
 
         with open(unlearn_idx_path, "r") as f:
             unlearned_indices = list(map(int, f.readlines()))
@@ -146,7 +146,7 @@ def load_and_predict(model_path, model_type="GOLD", unlearned_param_path=None,ru
     elif unlearn_task == "edge":
         # Load unlearned edges from file
         unlearn_edge_path = (
-            f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/unlearning_task/transductive/imbalanced/unlearning_edges_{u_ratio}_{dataset}_{run_number}_edges_{int(u_ratio * edge_index_np[0].size)}.txt"
+            f"EDGE_PATH_UNLEARN"
         )
         unlearning_edges = np.loadtxt(unlearn_edge_path, dtype=int)
         unlearning_edges = torch.tensor(unlearning_edges, dtype=torch.long, device=edge_index.device)

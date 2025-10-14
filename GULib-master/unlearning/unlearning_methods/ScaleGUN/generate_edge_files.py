@@ -18,10 +18,10 @@ torch.manual_seed(42)
 PERCENTAGES = [5, 10, 20, 30, 50]
 
 # Base directory for data
-DATA_DIR = "/home/gcond/unlearning/GNNDelete/ScaleGUN/data"
+DATA_DIR = "enter_data_path"
 
 # Directory to store deletion files
-OUTPUT_DIR = "/home/gcond/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/GULib-master/unlearning/unlearning_methods/ScaleGUN/unlearning_data_edge_files"
+OUTPUT_DIR = "enter_edge_path"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Create directories for each dataset

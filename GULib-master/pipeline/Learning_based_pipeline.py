@@ -167,7 +167,7 @@ class Learning_based_pipeline:
             # elif self.args["unlearn_task"]=="edge":
             #     self.mia_attack_edge()
         # ---- Store AUC and GOLD AUC results in file ----
-        with open("/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/MIA_stats.txt", "a") as f:
+        with open("/MIA_stats.txt", "a") as f:
             if self.args["unlearning_methods"]=="MEGU":
                 f.write(
                     "{} Average MIA MEGU Score: {:.4f} ± {:.4f}\n"

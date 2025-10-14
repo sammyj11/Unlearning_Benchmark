@@ -370,7 +370,7 @@ for run_number in range(num_runs):
     if unlearn_task == "node":
         num_nodes_local = data.x.size(0)
         unlearn_idx_path = (
-            f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/unlearning_task/transductive/imbalanced/unlearning_nodes_{u_ratio}_{dataset}_{run_number}_nodes_{int(u_ratio * num_nodes)}.txt"
+            f"/data/unlearning_task/transductive/imbalanced/unlearning_nodes_{u_ratio}_{dataset}_{run_number}_nodes_{int(u_ratio * num_nodes)}.txt"
         )
         with open(unlearn_idx_path, "r") as f:
             unlearned_indices = list(map(int, f.readlines()))
@@ -394,11 +394,11 @@ for run_number in range(num_runs):
 
     # Adjust GOLD model path if multi-run
     if num_runs > 1:
-        megu_model_path =  f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/unlearned_models/{model_name}/{dataset}/node/{unlearn_ratio}{copy_str}/{model_name}_{dataset}_node_{unlearn_ratio}_{run_number}{base_model_str}.pt"
+        megu_model_path =  f"/unlearned_models/{model_name}/{dataset}/node/{unlearn_ratio}{copy_str}/{model_name}_{dataset}_node_{unlearn_ratio}_{run_number}{base_model_str}.pt"
         if model_name=="Projector":
-            gold_model_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/model/node_level/{dataset}/Projector_GOLD_{run_number}.pt"
+            gold_model_path = f"/data/model/node_level/{dataset}/Projector_GOLD_{run_number}.pt"
         else:
-            gold_model_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/unlearned_models/GOLD/{dataset}/node/{unlearn_ratio}{copy_str}/GOLD_{dataset}_node_{unlearn_ratio}_{run_number}{base_model_str}.pt"
+            gold_model_path = f"/unlearned_models/GOLD/{dataset}/node/{unlearn_ratio}{copy_str}/GOLD_{dataset}_node_{unlearn_ratio}_{run_number}{base_model_str}.pt"
 
     # === Load Predictions ===
     logits_gold     = load_and_predict(gold_model_path,run_number=run_number)

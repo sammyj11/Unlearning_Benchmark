@@ -139,7 +139,7 @@ def load_and_predict(model_path, model_type="GOLD", unlearned_param_path=None, d
 def exact_match(y1, y2, mask):
     return np.mean(y1[mask] == y2[mask])
 
-out_file = "/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/GraphEraser_utility_Stats.txt"
+out_file = "/GraphEraser_utility_Stats.txt"
 # static/global storage for all runs
 call_count = 0
 all_results = {
@@ -208,7 +208,7 @@ class Aggregator:
         dataset = self.args['dataset_name']
         num_nodes = self.data.y.size(0)
 
-        unlearn_idx_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/unlearning_task/transductive/imbalanced/unlearning_nodes_{u_ratio}_{dataset}_0_nodes_{int(u_ratio * num_nodes)}.txt"
+        unlearn_idx_path = f"/data/unlearning_task/transductive/imbalanced/unlearning_nodes_{u_ratio}_{dataset}_0_nodes_{int(u_ratio * num_nodes)}.txt"
 
         with open(unlearn_idx_path, "r") as f:
             unlearned_indices = list(map(int, f.readlines()))
@@ -358,10 +358,10 @@ class Aggregator:
             base_model_str=""
             if self.args["base_model"]!="GCN":
                 base_model_str = "_" + self.args["base_model"]
-            original_model_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/model/node_level/{dataset}/{unlearn_task}/{self.args['base_model']}"
-            gold_model_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/unlearned_models/GOLD/{dataset}/{unlearn_task}/{unlearn_ratio}/GOLD_{dataset}_node_{unlearn_ratio}{run_str}{base_model_str}.pt"
-            data_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/data/processed/transductive/{dataset}0.8_0_0.2.pkl"
-            # gold_model_path_copy = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/unlearned_models/GOLD/{dataset}/{unlearn_task}/{unlearn_ratio}_copy/GOLD_{dataset}_node_{unlearn_ratio}.pt"
+            original_model_path = f"/data/model/node_level/{dataset}/{unlearn_task}/{self.args['base_model']}"
+            gold_model_path = f"/unlearned_models/GOLD/{dataset}/{unlearn_task}/{unlearn_ratio}/GOLD_{dataset}_node_{unlearn_ratio}{run_str}{base_model_str}.pt"
+            data_path = f"/data/processed/transductive/{dataset}0.8_0_0.2.pkl"
+            # gold_model_path_copy = f"/unlearned_models/GOLD/{dataset}/{unlearn_task}/{unlearn_ratio}_copy/GOLD_{dataset}_node_{unlearn_ratio}.pt"
 
             with open(data_path, "rb") as f:
                 data = pickle.load(f)

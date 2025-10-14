@@ -222,7 +222,7 @@ class projector():
             # dataset = self.args["dataset_name"]                    # e.g., 'cora'
             # unlearn_ratio = self.args["proportion_unlearned_nodes"]  # e.g., 0.01
 
-            # save_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/unlearned_models/{unlearning_model_name}/{dataset}/node/ratio_{unlearn_ratio:.2f}"
+            # save_path = f"/unlearned_models/{unlearning_model_name}/{dataset}/node/ratio_{unlearn_ratio:.2f}"
             # os.makedirs(save_path, exist_ok=True)
 
             # save_file = f"{unlearning_model_name}_{dataset}_node_ratio_{unlearn_ratio:.2f}.pt"
@@ -444,7 +444,7 @@ class projector():
             if self.args['base_model']!="GCN":  
                 base_model_str = "_" + self.args['base_model']
 
-            save_path = f"/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/unlearned_models/{unlearning_model_name}/{dataset}/node/ratio_{unlearn_ratio:.2f}{copy_str}"
+            save_path = f"/unlearned_models/{unlearning_model_name}/{dataset}/node/ratio_{unlearn_ratio:.2f}{copy_str}"
             os.makedirs(save_path, exist_ok=True)
 
             save_file = f"{unlearning_model_name}_{dataset}_node_ratio_{unlearn_ratio:.2f}{run_str}{base_model_str}.pt"
@@ -458,7 +458,7 @@ class projector():
             # self.logger.info("average_auc:{}".format(self.average_auc[self.run]) )
 
                 # ---- Store AUC and GOLD AUC results in file ----
-        with open("/DATATWO/users/gcond/data/unlearning/GNNDelete/ScaleGUN/GU_benchmark/OpenGU/MIA_stats.txt", "a") as f:
+        with open("/MIA_stats.txt", "a") as f:
             f.write(
                 "{} Average MIA {} Score: {:.4f} ± {:.4f}\n".format(
                     self.args["dataset_name"],

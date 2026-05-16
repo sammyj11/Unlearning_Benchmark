@@ -28,7 +28,7 @@ This benchmark provides:
 ### 1️⃣ Clone the Repository
 ```bash
 git clone <REPO-URL>
-cd GNN_Unlearning
+cd Unlearning_Benchmark
 ```
 
 ---

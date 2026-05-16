@@ -17,7 +17,7 @@ def parameter_parser():
     parser = argparse.ArgumentParser()
  
     #for all methods#
-    parser.add_argument('--cuda', type=int, default=3, help='specify gpu')
+    parser.add_argument('--cuda', type=int, default=0, help='specify gpu')
     parser.add_argument('--num_threads', type=int, default=1)
     parser.add_argument('--root_path', type=str, default='./', help='Set The Root Path')
     

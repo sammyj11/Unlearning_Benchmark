@@ -1,4 +1,4 @@
-numpy==1.21.6
+numpy==1.24.4
 torch_scatter==2.1.2
 torch_sparse==0.6.18
 torch_geometric==2.6.1
@@ -13,4 +13,5 @@ munkres==1.1.4
 cvxpy==1.5.2
 pymetis==2023.1.1
 ipdb==0.13.13
+memory_profiler==0.61.0
 

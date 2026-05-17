@@ -168,25 +168,14 @@ class Learning_based_pipeline:
             #     self.mia_attack_edge()
         # ---- Store AUC and GOLD AUC results in file ----
         with open("/MIA_stats.txt", "a") as f:
-            if self.args["unlearning_methods"]=="MEGU":
-                f.write(
-                    "{} Average MIA MEGU Score: {:.4f} ± {:.4f}\n"
-                    "{} Average MIA GOLD Score: {:.4f} ± {:.4f}\n".format(
-                        self.args["dataset_name"],
-                        np.mean(self.average_auc), np.std(self.average_auc),
-                        self.args["dataset_name"],
-                        np.mean(self.average_gold_auc), np.std(self.average_gold_auc)
-                    )
+            f.write(
+                "{} Average MIA {} Score: {:.4f} ± {:.4f}\n".format(
+                    self.args["dataset_name"],
+                    self.args["unlearning_methods"],
+                    np.mean(self.average_auc),
+                    np.std(self.average_auc)
                 )
-            else:
-                f.write(
-                    "{} Average MIA {} Score: {:.4f} ± {:.4f}\n".format(
-                        self.args["dataset_name"],
-                        self.args["unlearning_methods"],
-                        np.mean(self.average_auc),
-                        np.std(self.average_auc)
-                    )
-                )
+            )
         self.logger.info(
         "{}Performance Metrics:\n"
         " - Poison F1 Score: {:.4f} ± {:.4f}\n"

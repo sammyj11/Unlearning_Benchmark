@@ -103,6 +103,17 @@ This command will **train**, **unlearn**, and **save** the unlearned model.
 
 ---
 
+### Gold Standard (Retrain from Scratch)
+
+To obtain stats for the **gold standard** baseline i.e., retraining the model from scratch on the remaining data after forgetting, run with `--unlearning_methods GOLD`:
+
+```bash
+python GULib-master/main.py   --dataset_name cora   --base_model GCN   --unlearning_methods GOLD   --num_epochs 100   --batch_size 64   --unlearn_ratio 0.1   --num_runs 1   --cal_mem True
+```
+
+> Note that you have to **Run GOLD model first** before computing any evaluation stats, so that the retrained from scratch model is available for comparison.
+---
+
 ### Optional Arguments
 
 | Argument | Description | Example |
@@ -110,7 +121,7 @@ This command will **train**, **unlearn**, and **save** the unlearned model.
 | `--cuda <device>` | Specify GPU device to use | `--cuda 0` |
 | `--dataset_name <name>` | Graph dataset name | `--dataset_name cora` |
 | `--base_model <model>` | Base GNN model architecture | `GCN`, `GAT`, `GIN` |
-| `--unlearning_methods <method>` | Unlearning method | `MEGU`, `GIF`, `GraphEraser`, `GUIDE`, `GNNDelete`, `IDEA`, `Projector`, `ScaleGun`, `CGU` |
+| `--unlearning_methods <method>` | Unlearning method | `MEGU`, `GIF`, `GraphEraser`, `GUIDE`, `GNNDelete`, `IDEA`, `Projector`, `ScaleGun`, `CGU`, `GOLD` |
 | `--unlearn_ratio <value>` | Fraction of data to unlearn | `0.1` |
 | `--num_epochs <N>` | Number of training epochs | `100` |
 | `--batch_size <N>` | Batch size | `64` |
@@ -135,7 +146,7 @@ efficiency_stats.txt
 
 ## Utility Evaluation
 
-After Getting the Utility Stats, run:
+For Getting the Utility Stats, run:
 ```bash
 bash utility_stats.sh
 ```
@@ -193,13 +204,10 @@ Our benchmark currently supports:
 - **CGU**
 - **Cognac**
 - **ETR**
+- **GOLD** *(retrain from scratch — use as baseline before running evaluation)*
 
 ---
 
 ## Contact
 
 For questions, issues, or contributions, please open a GitHub issue or contact the authors.
-
-
-
-

@@ -63,7 +63,7 @@ def parameter_parser():
                                                     "IMDB-BINARY",
                                                     "IMDB-MULTI"])
     parser.add_argument('--is_transductive', type=str2bool, default=True, help = "Task is transductive or inductive")
-    parser.add_argument('--cal_mem', type=str2bool, default=False, help = "run exp to calculate memory")
+    parser.add_argument('--cal_mem', type=str2bool, default=True, help = "run exp to calculate memory")
     # parser.add_argument('--inductive', type=str, default='normal', choices=['cluster-gcn', 'graphsaint', 'normal'])
     parser.add_argument('--is_balanced' ,type = str2bool,default=False,help="dataset is split with balanced classes" )
     parser.add_argument('--use_batch', type=str2bool, default=False, help="train model with minibatch")
@@ -75,8 +75,8 @@ def parameter_parser():
     #modelMin
     parser.add_argument('--base_model', type=str, default='GCN', choices=["SIGN", "SGC","S2GC","SAGE", "GAT", 'Cluster_GCN', "GCN", "GIN",
                                                                           "GST","SAINT","Projector","Cheb","APPNP","GCN2","GATv2","TAG","LightGCN"])
-    parser.add_argument('--unlearning_methods', type=str, default='SGU',
-                        choices=['GraphEraser', 'GUIDE', 'GNNDelete', 'CEU', "GIF", "SGU","CGU","GST","Projector","MEGU","IDEA","ScaleGUN","COGNAC","ETR"])
+    parser.add_argument('--unlearning_methods', type=str, default='GOLD',
+                        choices=['GOLD', 'GraphEraser', 'GUIDE', 'GNNDelete', 'CEU', "GIF", "SGU","CGU","GST","Projector","MEGU","IDEA","ScaleGUN","COGNAC","ETR"])
     parser.add_argument('--train_ratio', type=float, default=0.8)
     parser.add_argument('--val_ratio', type=float, default=0)
     parser.add_argument('--test_ratio', type=float, default=0.2)
@@ -271,6 +271,16 @@ def parameter_parser():
                         help='Cognac: k-hop radius for neighbourhood sampling (paper default: 2)')
     parser.add_argument('--linked', type=str2bool, default=None,
                         help='Cognac: True = descent uses full graph; False = uses dr_mask edges (paper default: False)')
+    
+    # ETR (Erase Then Rectify) — AAAI 2025
+    parser.add_argument('--etr_erase_ratio', type=float, default=0.01,
+                        help='ETR: quantile threshold for the Erase step.')
+    parser.add_argument('--etr_l', type=float, default=0.3,
+                        help='ETR: step size for the Rectify step.')
+    parser.add_argument('--etr_lr', type=float, default=1e-3,
+                        help='ETR: Adam learning rate used when computing gradients.')
+    parser.add_argument('--etr_wd', type=float, default=1e-4,
+                        help='ETR: Adam weight decay used when computing gradients.')
     
     ###MEGU###
     parser.add_argument('--kappa', type=float, default=0.01)

@@ -145,7 +145,7 @@ class megu(Learning_based_pipeline):
         """
         self.adj = sparse_mx_to_torch_sparse_tensor(normalize_adj(to_scipy_sparse_matrix(self.data.edge_index,num_nodes=self.data.num_nodes))).cuda()
         self.neighbor_khop = self.neighbor_select(self.data.x.cuda())
-        # self.avg_unlearning_time[self.run], self.average_f1[self.run] = self.target_model.megu_unlearning(self.temp_node,self.neighbor_khop,self.run)
+        self.avg_unlearning_time[self.run], self.average_f1[self.run] = self.target_model.megu_unlearning(self.temp_node,self.neighbor_khop,self.run)
         self.avg_unlearning_time_gold[self.run], self.average_f1_gold[self.run] = self.gold_standard_unlearning()
         if self.args["attack"]:
             self.average_auc[self.run] = self.mia_attack()

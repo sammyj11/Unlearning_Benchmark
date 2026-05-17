@@ -163,7 +163,7 @@ Note:
   - `GraphEraser_utility_stats.txt`
   - `GUIDE_utility_stats.txt`
 - For getting forgetting results for them, give attack_type argument in main.py
-- Currently, to get the results on **Cognac** and **ETR**, we follow their open-source implementation.
+- Currently, to get the results on **ETR**, we follow their open-source implementation.
 
 ---
 

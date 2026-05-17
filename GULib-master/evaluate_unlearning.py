@@ -65,8 +65,8 @@ PROCESSED_DATA_DIR = DATA_ROOT / "data/processed/transductive"
 UNLEARN_TASK_DIR = DATA_ROOT / "data/unlearning_task/transductive/imbalanced"
 MODEL_DIR = DATA_ROOT / "data/model/node_level"
 UNLEARNED_MODEL_DIR = DATA_ROOT / "unlearned_models"
-COGNAC_DIR = DATA_ROOT / "data/model"   #Add path to Cognac model directory 
-ETR_DIR = DATA_ROOT / "data/model"    #Add path to ETR model directory 
+# COGNAC_DIR = DATA_ROOT / "data/model"   #Add path to Cognac model directory
+ETR_DIR = DATA_ROOT / "data/model"    #Add path to ETR model directory
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -156,13 +156,7 @@ def build_paths(args: argparse.Namespace) -> Dict[str, Path]:
         / f"GOLD_{dataset}_node_{unlearn_ratio_tag}{base_suffix}.pt"
     )
 
-    if method == "Cognac":
-        dataset_label = "Cora" if dataset == "cora" else dataset
-        unlearn_model_path = (
-            COGNAC_DIR
-            / f"GCNNet3_{dataset_label}_edge_0.1_0_run0_cacdc_unlearnt_model.pt"
-        )
-    elif method == "ETR":
+    if method == "ETR":
         unlearn_model_path = (
             ETR_DIR / f"{dataset}/unlearned_model_GCNNet3_{dataset}_seed0.pt"
         )
@@ -198,6 +192,34 @@ def gold_model_path_for_run(
         UNLEARNED_MODEL_DIR
         / f"GOLD/{dataset}/{unlearn_task}/{ratio_tag}"
         / f"GOLD_{dataset}_node_{ratio_tag}_{run}{base_suffix}.pt"
+    )
+
+
+def unlearn_model_path_for_run(
+    paths: Dict, dataset: str, unlearn_task: str, run: int
+) -> Path:
+    """
+    Return the per-run unlearned model path when ``num_runs > 1``.
+
+    Naming convention matches what every method trainer saves:
+        unlearned_models/{method}/{dataset}/{unlearn_task}/{ratio_tag}/
+            {method}_{dataset}_node_{ratio_tag}_{run}{base_suffix}.pt
+
+    ETR does not produce per-run checkpoints, so its static path is
+    returned unchanged.
+    """
+    method = paths["method"]
+
+    # ETR has no per-run checkpoints — return its single static path.
+    if method == "ETR":
+        return paths["unlearn_model"]
+
+    ratio_tag   = paths["unlearn_ratio_tag"]
+    base_suffix = paths["base_suffix"]
+    return (
+        UNLEARNED_MODEL_DIR
+        / f"{method}/{dataset}/{unlearn_task}/{ratio_tag}"
+        / f"{method}_{dataset}_node_{ratio_tag}_{run}{base_suffix}.pt"
     )
 
 
@@ -288,7 +310,7 @@ def get_logits(
     model_path:
         Path to the saved checkpoint.
     model_type:
-        Identifier string (``"GOLD"``, ``"MEGU"``, ``"GNNDelete"``, …).
+        Identifier string (``"GOLD"``, ``"MEGU"``, ``"GNNDelete"``, ...).
     data:
         PyG ``Data`` object (already on ``DEVICE``).
     args_cli:
@@ -325,13 +347,12 @@ def get_logits(
         unlearn_edge_path = (
             UNLEARN_TASK_DIR
             / f"unlearning_edges_{u_ratio}_{args_cli.dataset_name}_{run_number}"
-              f"_edges_{edge_index_np[0].size}.txt"
+              f"_edges_{int(u_ratio * edge_index_np[0].size)}.txt"
         )
         unlearning_edges = torch.tensor(
             np.loadtxt(unlearn_edge_path, dtype=int),
             dtype=torch.long, device=DEVICE,
         )
-        # Use `unlearned_nodes` consistently so the Projector branch below can reference it
         unlearned_nodes = unlearning_edges.flatten().unique()
         mask_1hop, mask_2hop = compute_hop_masks(unlearned_nodes, edge_index, num_nodes)
 
@@ -389,7 +410,7 @@ def get_logits(
             else:
                 logits = model.reason_once_unlearn(copy_data)
 
-        else:  # GOLD, MEGU, and other standard methods
+        else:  # GOLD, MEGU, COGNAC, and other standard methods
             logits = model(copy_data.x, copy_data.edge_index)
 
     return logits
@@ -403,7 +424,6 @@ def _get_projector_logits(
     args_cli: argparse.Namespace,
 ) -> torch.Tensor:
     """Inference path for the Projector-based unlearning method."""
-    # Augment node features with an 'is-unlearned' flag
     extra = torch.zeros(copy_data.x.size(0), device=DEVICE)
     extra[unlearned_nodes] = 1.0
     copy_data.x = torch.cat([copy_data.x, extra.unsqueeze(-1)], dim=1)
@@ -416,7 +436,6 @@ def _get_projector_logits(
         ).to_symmetric(),
         1,
     )
-    # Bug fix: use copy_data.y (not bare `data.y`) — copy_data is our working copy
     copy_data.y_one_hot_train = F.one_hot(
         data.y.squeeze(), copy_data.num_classes + 1
     ).float()
@@ -481,15 +500,6 @@ def pairwise_metrics(
     preds_b: np.ndarray,
     mask: Optional[np.ndarray],
 ) -> Tuple[float, float]:
-    """
-    Returns
-    -------
-    exact_match : float
-        Fraction of nodes where both models predict the same class.
-    l2_dist : float
-        Mean per-node L2 distance between raw logits.
-    """
-    # Align output dimensions (e.g. Projector may have extra classes)
     if logits_a.size(1) != logits_b.size(1):
         min_dim = min(logits_a.size(1), logits_b.size(1))
         logits_a, logits_b = logits_a[:, :min_dim], logits_b[:, :min_dim]
@@ -529,7 +539,7 @@ def print_results(
         print(f"  [{model_label}]  Micro-F1: {mean_std(f1s)}")
 
     print(f"\n{separator}")
-    print("Pairwise Fidelity (exact-match rate, mean ± std)")
+    print("Pairwise Fidelity (exact-match rate, mean +/- std)")
     print(separator)
     for pair, regions in pairwise["exact"].items():
         print(f"  {pair}:")
@@ -537,7 +547,7 @@ def print_results(
             print(f"    {region}: {mean_std(vals)}")
 
     print(f"\n{separator}")
-    print("Pairwise Logit L2 Distance (mean ± std)")
+    print("Pairwise Logit L2 Distance (mean +/- std)")
     print(separator)
     for pair, regions in pairwise["l2"].items():
         print(f"  {pair}:")
@@ -546,7 +556,7 @@ def print_results(
 
     if attack_type and attack_auc_runs:
         print(f"\n{separator}")
-        print(f"{attack_type} Attack AUROC (mean ± std)")
+        print(f"{attack_type} Attack AUROC (mean +/- std)")
         print(separator)
         print(f"  {mean_std(attack_auc_runs)}")
 
@@ -600,7 +610,6 @@ def main() -> None:
     f1_runs: Dict[str, List[float]] = {"Original": [], "GOLD": [], method: []}
     attack_auc_runs: List[float] = []
 
-    # Pairwise metric storage: metric_type → pair_label → region_label → [values]
     pairwise: Dict[str, Dict[str, Dict[str, List[float]]]] = {
         "exact": {}, "l2": {}
     }
@@ -616,14 +625,21 @@ def main() -> None:
             else paths["gold_model"]
         )
 
+        # Resolve per-run unlearn path for ALL methods (fixes zero-variance bug)
+        unlearn_path = (
+            unlearn_model_path_for_run(paths, dataset, unlearn_task, run)
+            if args.num_runs > 1
+            else paths["unlearn_model"]
+        )
+
         logits_gold = get_logits(
             gold_path, model_type="GOLD",
             data=data, args_cli=args, model_args=model_args, run_number=run,
         )
         logits_unlearn = get_logits(
-            paths["unlearn_model"], model_type=method,
+            unlearn_path, model_type=method,
             data=data, args_cli=args, model_args=model_args, run_number=run,
-            unlearned_param_path=paths["unlearn_model"],
+            unlearned_param_path=unlearn_path,
         )
 
         preds_gold = logits_gold.argmax(dim=1).cpu().numpy()
@@ -639,7 +655,13 @@ def main() -> None:
             acc_runs[label].append(node_accuracy(y_true, preds, test_mask))
             f1_runs[label].append(node_f1(y_true, preds, test_mask))
 
-        # ---- Membership-inference attack (nodes only) -----------------
+        # ---- Unlearn indices (needed for attack) ----------------------
+        if unlearn_task == "node":
+            unlearned_indices = load_node_unlearn_indices(
+                dataset, u_ratio, run, num_nodes
+            )
+
+        # ---- Attacks (nodes only) ------------------------------------
         if args.attack_type and unlearn_task == "node":
             attack_fn = ATTACK_MAP[args.attack_type]
             auc = attack_fn(
@@ -648,7 +670,7 @@ def main() -> None:
                 data,
                 train_mask,
                 test_mask,
-                unlearned_indices=None,
+                unlearned_indices,
                 run_number=run,
                 u_ratio=u_ratio,
                 dataset=dataset,
@@ -658,19 +680,12 @@ def main() -> None:
             )
             attack_auc_runs.append(auc)
 
-        # ---- Pairwise metrics ----------------------------------------
-        if unlearn_task == "node":
-            # Load indices only to stay consistent with the run; mask is available
-            # for future use if additional regions (e.g. retained train) are re-enabled.
-            unlearned_indices = load_node_unlearn_indices(
-                dataset, u_ratio, run, num_nodes
-            )
         regions = [("Test Nodes", test_mask)]
 
         comparisons = {
-            "Gold vs Original":          (logits_gold, logits_original, preds_gold, preds_original),
-            f"Gold vs {method}":         (logits_gold, logits_unlearn, preds_gold, preds_unlearn),
-            f"Original vs {method}":     (logits_original, logits_unlearn, preds_original, preds_unlearn),
+            "Gold vs Original":      (logits_gold, logits_original, preds_gold, preds_original),
+            f"Gold vs {method}":     (logits_gold, logits_unlearn, preds_gold, preds_unlearn),
+            f"Original vs {method}": (logits_original, logits_unlearn, preds_original, preds_unlearn),
         }
 
         for pair, (la, lb, pa, pb) in comparisons.items():

@@ -4,6 +4,7 @@ from unlearning.unlearning_methods.GraphEraser.grapheraser import grapheraser
 from unlearning.unlearning_methods.GUIDE.guide import guide
 from unlearning.unlearning_methods.GIF.gif import gif
 from unlearning.unlearning_methods.CGU.cgu import cgu
+from unlearning.unlearning_methods.Cognac.cognac import cognac
 from unlearning.unlearning_methods.GST.gst_based import gst
 from unlearning.unlearning_methods.Projector.projector import projector
 from unlearning.unlearning_methods.GNNDelete.gnndelete import gnndelete
@@ -25,6 +26,7 @@ method_map = {
     "GraphEraser": grapheraser,
     "GNNDelete": gnndelete,
     "CGU": cgu,
+    "COGNAC": cognac,
     "GIF": gif,
     "GUIDE": guide,
     "GST": gst,

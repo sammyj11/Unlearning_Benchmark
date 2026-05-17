@@ -254,6 +254,24 @@ def parameter_parser():
     parser.add_argument('--compare_guo', action='store_true', default=False,
                         help='Compare performance with Guo et al.')
     
+    # -------- Cognac --------
+    parser.add_argument('--steps', type=int, default=None,
+                        help='Cognac: outer ascent-descent steps (paper default: 10)')
+    parser.add_argument('--contrastive_epochs_1', type=int, default=None,
+                        help='Cognac: contrastive/SAGE inner epochs per step (paper default: 5)')
+    parser.add_argument('--contrastive_epochs_2', type=int, default=None,
+                        help='Cognac: ascent+descent inner epochs per step (paper default: 5)')
+    parser.add_argument('--ascent_lr', type=float, default=None,
+                        help='Cognac: learning rate for gradient ascent / forgetting (paper default: 1e-4)')
+    parser.add_argument('--descent_lr', type=float, default=None,
+                        help='Cognac: learning rate for gradient descent / retaining (paper default: 1e-4)')
+    parser.add_argument('--contrastive_frac', type=float, default=None,
+                        help='Cognac: fraction of k-hop neighbours selected as influence nodes (paper default: 0.1)')
+    parser.add_argument('--k_hop', type=int, default=None,
+                        help='Cognac: k-hop radius for neighbourhood sampling (paper default: 2)')
+    parser.add_argument('--linked', type=str2bool, default=None,
+                        help='Cognac: True = descent uses full graph; False = uses dr_mask edges (paper default: False)')
+    
     ###MEGU###
     parser.add_argument('--kappa', type=float, default=0.01)
     parser.add_argument('--alpha1', type=float, default=0.8)

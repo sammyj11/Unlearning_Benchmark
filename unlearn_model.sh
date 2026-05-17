@@ -24,7 +24,7 @@ for method in "${methods[@]}"; do
           --num_epochs 100 \
           --batch_size 64 \
           --unlearn_ratio "$ratio" \
-          --num_runs 5 \
+          --num_runs 1 \
           --cal_mem True 
       done
     done

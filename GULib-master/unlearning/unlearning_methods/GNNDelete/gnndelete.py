@@ -653,7 +653,7 @@ class gnndelete(Learning_based_pipeline):
         self.data.dtrain_mask = dr_mask_edge
 
         self.target_model.model = self.model_zoo.get_model(sdf_node_1hop, sdf_node_2hop, num_nodes=self.data.num_nodes)
-        model_path  = os.path.join(root_path + "/data/model/edge_level/" ,self.args["dataset_name"], self.args['downstream_task'],self.args["base_model"])
+        model_path  = os.path.join(root_path + "/data/model/node_level/" ,self.args["dataset_name"], self.args['unlearn_task'],self.args["base_model"])
         if self.args["unlearning_model"] != 'retrain':  # Start from trained GNN model
             if os.path.exists(os.path.join(original_path, 'pred_proba.pt')):
                 logits_ori = torch.load(os.path.join(original_path, 'pred_proba.pt'))

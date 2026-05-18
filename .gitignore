@@ -1,2 +1,5 @@
-
 **/__pycache__/
+**/log/
+**/data/
+**/unlearned_models/
+**/efficiency_stats.txt

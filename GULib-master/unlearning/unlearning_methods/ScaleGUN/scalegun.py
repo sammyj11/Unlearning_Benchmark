@@ -5,7 +5,7 @@ import time
 import torch.nn.functional as F
 from tqdm import tqdm
 from task import get_trainer
-from unlearning.unlearning_methods.ScaleGUN.progation_pkg import propagation
+from unlearning.unlearning_methods.ScaleGUN.propagation_pkg import propagation
 import os
 import gc
 from unlearning.unlearning_methods.ScaleGUN.utils import *

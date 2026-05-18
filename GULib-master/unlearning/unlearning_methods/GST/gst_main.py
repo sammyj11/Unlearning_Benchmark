@@ -147,7 +147,7 @@ class GeometricScattering(MessagePassing):
             tree_node_start_idx += self.J ** (l - 1)
         # reshape the output
         res_x_output = res_x.view(x.size(0), -1)
-        breakpoint()
+        # breakpoint()
         return res_x_output
 
     def message(self, x_j: Tensor, edge_weight: Tensor) -> Tensor:

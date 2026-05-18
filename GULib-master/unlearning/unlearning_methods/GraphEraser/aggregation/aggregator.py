@@ -520,7 +520,7 @@ class Aggregator:
         
         # print(posterior,self.true_label_edge)
         if self.args["downstream_task"]=="node":
-            breakpoint()
+            # breakpoint()
             return f1_score(self.true_label, posterior.argmax(axis=1).cpu().numpy(), average="micro"), posterior
         elif self.args["downstream_task"]=="edge":
             posterior = torch.where(posterior > 0.5, torch.tensor(1), torch.tensor(0))

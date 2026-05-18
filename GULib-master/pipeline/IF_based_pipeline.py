@@ -126,10 +126,10 @@ class IF_based_pipeline:
 
         
         funcs = [
-            ("determine_target_model", lambda: self.determine_target_model()),
-            ("train_original_model", lambda: self.train_original_model(self.run)),
-            ("unlearning_request", lambda: self.unlearning_request()),
-            ("unlearn", lambda: self.unlearn()),
+            ("determining target model", lambda: self.determine_target_model()),
+            ("training original model", lambda: self.train_original_model(self.run)),
+            ("unlearning preprocessing", lambda: self.unlearning_request()),
+            ("unlearning step", lambda: self.unlearn()),
         ]
 
         results = {name: {"times": [], "gpu": [], "py": []} for name, _ in funcs}
@@ -161,7 +161,7 @@ class IF_based_pipeline:
                 f.write(f"  Time (s): mean={t.mean():.6f}, std={t.std():.6f}\n")
                 f.write(f"  GPU Peak (MB): mean={g.mean():.2f}, std={g.std():.2f}\n")
                 f.write(f"  Python Heap Peak (MB): mean={p.mean():.2f}, std={p.std():.2f}\n\n")
-            f.write(f"Crucial Unlearning time (s): mean={np.mean(self.avg_unlearning_time):.6f}, std={np.std(self.avg_unlearning_time):.6f}\n")
+            # f.write(f"Crucial Unlearning time (s): mean={np.mean(self.avg_unlearning_time):.6f}, std={np.std(self.avg_unlearning_time):.6f}\n")
 
     def run_exp(self):
         """

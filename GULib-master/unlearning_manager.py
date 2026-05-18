@@ -20,8 +20,6 @@ from attack.MIA_attack import GCNShadowModel
 from attack.MIA_attack import train_shadow_model
 from attack.MIA_attack import generate_shadow_model_output
 from attack.MIA_attack import train_attack_model
-# from memory_profiler import profile
-# import optuna
 
 method_map = {
     "GraphEraser": grapheraser,

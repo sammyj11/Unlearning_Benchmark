@@ -105,10 +105,10 @@ class Shard_based_pipeline:
         import time, tracemalloc, numpy as np, torch
         
         funcs = [
-            ("exp_partition", self.exp_partition),
-            ("exp_train", self.exp_train),
-            ("exp_unlearn_request",self.generate_requests),
-            ("exp_unlearn", self.exp_unlearn),
+            ("making partitions", self.exp_partition),
+            ("trainining original model", self.exp_train),
+            ("unlearning preprocessing",self.generate_requests),
+            ("unlearning step", self.exp_unlearn),
         ]
 
         results = {name: {"times": [], "gpu": [], "py": []} for name, _ in funcs}
@@ -140,7 +140,7 @@ class Shard_based_pipeline:
                 f.write(f"  Time (s): mean={t.mean():.6f}, std={t.std():.6f}\n")
                 f.write(f"  GPU Peak (MB): mean={g.mean():.2f}, std={g.std():.2f}\n")
                 f.write(f"  Python Heap Peak (MB): mean={p.mean():.2f}, std={p.std():.2f}\n\n")
-            f.write(f"Crucial Unlearning time (s): mean={np.mean(self.avg_unlearning_time):.6f}, std={np.std(self.avg_unlearning_time):.6f}\n")
+            # f.write(f"Crucial Unlearning time (s): mean={np.mean(self.avg_unlearning_time):.6f}, std={np.std(self.avg_unlearning_time):.6f}\n")
     
     def run_exp(self):
         """

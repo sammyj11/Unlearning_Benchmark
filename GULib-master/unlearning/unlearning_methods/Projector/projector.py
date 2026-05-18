@@ -49,6 +49,7 @@ class projector():
         self.average_auc = np.zeros(num_runs)
         self.avg_training_time = np.zeros(num_runs)
         self.avg_pro_gnn_time = np.zeros(num_runs)
+        self.avg_unlearning_preprocessing_time = np.zeros(num_runs)
         self.avg_total_unlearning_time = np.zeros(num_runs)
 
 
@@ -166,7 +167,7 @@ class projector():
             delete_node_batch = [[] for _ in range(batch)]
             for i, node_i in enumerate(delete_nodes_all):
                 delete_node_batch[i % batch].append(node_i)
-
+            self.avg_unlearning_preprocessing_time[self.run] = time.time() - start_all_time
             start_time = time.time()
             for cnt, delete_node_batch_i in enumerate(delete_node_batch):
                 # get remain node feats
@@ -206,8 +207,8 @@ class projector():
 
             self.avg_training_time[self.run] = time.time() - start_time
             self.avg_total_unlearning_time[self.run] = time.time() - start_all_time
-            self.logger.info("Total time:{}".format(self.avg_training_time[self.run]) )
-            self.logger.info("Total unl time:{}".format(time.time() - start_all_time) )
+            self.logger.info("unlearning preprocessing time (s) :{}".format(self.avg_unlearning_preprocessing_time[self.run]) )
+            self.logger.info("unlearning step time (s) :{}".format(self.avg_total_unlearning_time[self.run]))
 
             model_unlearn = copy.deepcopy(model_optim)
             model_unlearn.W.data = W_optim
@@ -254,8 +255,12 @@ class projector():
         with open("efficiency_stats.txt", "a") as f:
             f.write("==============  Efficiency Statistics ============== \n")
             f.write(f"Runs: {self.args['num_runs']}, Dataset: {self.args['dataset_name']},Technique: {self.args['unlearning_methods']}\n")
-            f.write(f"Total Unlearning time (s): mean={np.mean(self.avg_total_unlearning_time):.6f}, std={np.std(self.avg_total_unlearning_time):.6f}\n")
-            f.write(f"Total Unlearning time (s): mean={np.mean(self.avg_training_time):.6f}, std={np.std(self.avg_training_time):.6f}\n")
+            f.write(f"Unlearning Preprocessing time (s): mean={np.mean(self.avg_unlearning_preprocessing_time):.6f}, std={np.std(self.avg_unlearning_preprocessing_time):.6f}\n")
+            f.write(f"Unlearning Step time (s): mean={np.mean(self.avg_training_time):.6f}, std={np.std(self.avg_training_time):.6f}\n")
+            if torch.cuda.is_available():
+                peak_mem = torch.cuda.max_memory_allocated() / (1024 ** 2)  # in MB
+                print(f"Peak GPU memory allocated in Projector: {peak_mem:.2f} MB")
+                f.write(f"Peak GPU memory allocated in Projector: {peak_mem:.2f} MB\n")
     
     def run_exp(self):
         """
@@ -483,15 +488,6 @@ class projector():
             RESET_COLOR
             )
         )
-        with open("efficiency_stats.txt", "a") as f:
-            f.write("==============  Efficiency Statistics ============== \n")
-            f.write(f"Runs: {self.args['num_runs']}, Dataset: {self.args['dataset_name']},Technique: {self.args['unlearning_methods']}\n")
-            f.write(f"Total Unlearning time (s): mean={np.mean(self.avg_total_unlearning_time):.6f}, std={np.std(self.avg_total_unlearning_time):.6f}\n")
-            f.write(f"Total Unlearning time (s): mean={np.mean(self.avg_training_time):.6f}, std={np.std(self.avg_training_time):.6f}\n")
-            if torch.cuda.is_available():
-                peak_mem = torch.cuda.max_memory_allocated() / (1024 ** 2)  # in MB
-                print(f"Peak GPU memory allocated in Projector: {peak_mem:.2f} MB")
-                f.write(f"Peak GPU memory allocated in Projector: {peak_mem:.2f} MB\n")
 
     def pre_train(self):
         """
@@ -658,7 +654,7 @@ class projector():
         evaluate the effectiveness of unlearning.
         """
         self.mia_num = self.unlearning_num
-        breakpoint()
+        # breakpoint()
         original_softlabels_member = self.original_softlabels[self.unlearning_nodes]
         original_softlabels_non = self.original_softlabels[self.data.test_indices[:self.mia_num]]
 
@@ -673,4 +669,4 @@ class projector():
         auc = roc_auc_score(mia_test_y, posterior.reshape(-1, 1))
         self.logger.info("auc:{}".format(auc))
         self.auc = auc
-        breakpoint()
+        # breakpoint()
